@@ -1,28 +1,32 @@
-import requests
+from typing import (
+    Any,
+    Callable,
+    Dict,
+)
+
+import httpx
+
+from configs.config import Config
+from utils.utils import get_local_proxy
 
 
-class APIError(RuntimeError):
+class SiyuanAPIError(RuntimeError):
+    def __init__(self, response):
+        self.response = response
+
+
+class SiyuanAPIException(Exception):
     def __init__(self, response):
         self.response = response
 
 
 class ResponseBody(object):
 
-    def __init__(self, body):
+    def __init__(self, body: Dict[str, Any]):
         self.body = body
         self.code = body.get('code')
         self.msg = body.get('msg')
         self.data = body.get('data')
-
-
-def parse(request):
-    def wrapper(*args, **kw):
-        response = request(*args, **kw)
-        if response.status_code == 200:
-            return ResponseBody(response.json())
-        else:
-            raise APIError(response)
-    return wrapper
 
 
 class URL:
@@ -89,6 +93,18 @@ class URL:
         self.currentTime = socket + URL.currentTime
 
 
+def parse(request: Callable) -> Callable:
+    async def wrapper(*args, **kw) -> ResponseBody:
+        response = await request(*args, **kw)
+        if response.status_code == 200:
+            body = ResponseBody(response.json())
+            if body.code == 0:
+                return body
+            raise SiyuanAPIException(response)
+        raise SiyuanAPIError(response)
+    return wrapper
+
+
 class API(object):
 
     def __init__(
@@ -106,26 +122,51 @@ class API(object):
         self._headers = {
             "Authorization": f"Token {self._token}",
         }
+        self._proxies = proxies
         self.socket = f"{self._protocol}://{self._host}:{self._port}"
         self.url = URL(self.socket)
-        self._session = requests.Session()
-        self._session.headers.update(self._headers)
-        if proxies is not None:
-            self._session.proxies.update(proxies)
 
     @parse
-    def post(self, url, body=None):
-        if body is None:
-            return self._session.post(url)
-        else:
-            return self._session.post(url, json=body)
+    async def post(self, url, body=None):
+        async with httpx.AsyncClient(headers=self._headers, proxies=self._proxies) as client:
+            if body is None:
+                return await client.post(url)
+            else:
+                return await client.post(url, json=body)
 
     @parse
-    def upload(self, path: str, files: list):
-        return self._session.post(
-            self.url.upload,
-            data={
-                'assetsDirPath': path,
-            },
-            files=[('file[]', file) for file in files]
-        )
+    async def upload(self, path: str, files: list):
+        async with httpx.AsyncClient(headers=self._headers, proxies=self._proxies) as client:
+            return await client.post(
+                self.url.upload,
+                data={
+                    'assetsDirPath': path,
+                },
+                files=[('file[]', file) for file in files]
+            )
+
+
+api = API(
+    token=Config.get_config("siyuan", "SIYUAN_TOKEN"),
+    host=Config.get_config("siyuan", "SIYUAN_HOST"),
+    port=Config.get_config("siyuan", "SIYUAN_PORT"),
+    ssl=Config.get_config("siyuan", "SIYUAN_SSL"),
+    proxies={
+        'http://': get_local_proxy(),
+        'https://': get_local_proxy(),
+    },
+)
+
+# api = API(
+#     token='arvj70bkd2eajv0a',
+#     host='127.0.0.1',
+#     port='6806',
+#     ssl=False,
+# )
+
+# api = API(
+#     token='arvj70bkd2eajv0a',
+#     host='siyuan.zuoqiu.asia',
+#     port='443',
+#     ssl=True,
+# )
