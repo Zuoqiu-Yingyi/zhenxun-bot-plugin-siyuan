@@ -58,7 +58,7 @@ Config.add_plugin_config(
     value=None,
     name="Token",
     help_="思源笔记 URL",
-    # default_value="0123456789ABCDEF",
+    # default_value="http://localhost:6806",
     # _override=True,
 )
 

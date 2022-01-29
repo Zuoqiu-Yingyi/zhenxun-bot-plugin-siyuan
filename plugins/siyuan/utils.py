@@ -1,5 +1,7 @@
-import json
 import re
+import json
+
+import xml.dom.minidom
 
 from datetime import datetime
 from functools import partial
@@ -9,11 +11,17 @@ from typing import (
     Any,
     Dict,
     Tuple,
+    Union,
+)
+
+from nonebot.adapters.cqhttp import (
+    Bot,
 )
 
 from utils.http_utils import AsyncHttpx
 
 from .API import api
+from .cqcode import cqparser
 
 SIYUAN_FILE_PATH = Path("resources/siyuan/files/")
 SIYUAN_IMAGE_PATH = Path("resources/siyuan/images/")
@@ -79,6 +87,7 @@ class Download:
             url: str 文件资源完整路径
             file: str 含扩展名的文件名
         :返回:
+            文件名
             下载完成后的文件绝对路径
             若下载失败则返回 None
         """
@@ -93,6 +102,7 @@ class Download:
         :参数:
             file: str 文件资源完整路径
         :返回:
+            文件名
             下载完成后的文件绝对路径
             若下载失败则返回 None
         """
@@ -101,24 +111,25 @@ class Download:
         return name, await cls.download(url=file, path=path)
 
     @classmethod
-    async def video(cls, file: str) -> str:
+    async def video(cls, url: str, file: str) -> str:
         """
         :说明:
-            下载短视频
+            下载消息中的图片
         :参数:
-            file: str 文件资源完整路径
+            url: str 文件资源完整路径
+            file: str 含扩展名的文件名
         :返回:
+            文件名
             下载完成后的文件绝对路径
             若下载失败则返回 None
         """
-        name = cls.getFileName(url=file)
-        path = Path(SIYUAN_VIDEO_PATH) / name
-        return name, await cls.download(url=file, path=path)
+        path = Path(SIYUAN_VIDEO_PATH) / file
+        return file, await cls.download(url=url, path=path)
 
 
 async def eventBodyParse(event: str) -> Dict[str, Any]:
     body = json.loads(event)
-    print(body)
+    # print(body)
     return body
 
 
@@ -227,48 +238,90 @@ async def blockFormat(
     message.removesuffix('\n')
     if is_message:
         sender = event.get('sender')
-        return f'{message}\n{l}: custom-post-type="message" custom-message-id="{event.get("message_id")}" custom-message-seq="{event.get("message_seq")}" custom-sender-id="{sender.get("user_id")}" custom-sender-nickname="{sender.get("nickname")}" custom-sender-card="{sender.get("card")}"{r}'
+        return f'{message}\n{l}: custom-post-type="message" custom-message-id="{event.get("message_id")}" custom-message-seq="{event.get("message_seq")}" custom-sender-id="{sender.get("user_id")}" custom-sender-nickname="{sender.get("nickname")}" custom-sender-card="{sender.get("card")}" custom-time="{event.get("time")}"{r}'
     else:
-        return f'{message}\n{l}: custom-post-type="notice" custom-sender-id="{event.get("user_id")}"{r}'
+        return f'{message}\n{l}: custom-post-type="notice" custom-sender-id="{event.get("user_id")}" custom-time="{event.get("time")}{r}'
+
+
+async def XMLFormat(s: str, indent: str = '    ') -> str:
+    """
+    :说明:
+        XML 文本格式化
+    :参数:
+        s: 原 XML 文本字符串
+        indent: 缩进字符
+    :返回:
+        格式化后的 XML 文本
+    :参考:
+        REF [Python如何优雅的格式化XML 【Python XML Format】 - sssuperMario - 博客园](https://www.cnblogs.com/atrox/p/13579541.html)
+        REF [xml.dom.minidom - 最小化的 DOM 实现](https://docs.python.org/zh-cn/3/library/xml.dom.minidom.html?highlight=xml%20toprettyxml)
+        REF [xml.dom.minidom.Node.toprettyxml](https://docs.python.org/zh-cn/3/library/xml.dom.minidom.html?highlight=xml%20toprettyxml#xml.dom.minidom.Node.toprettyxml)
+    """
+    return re.sub(r"\n\s*\n", r"\n", xml.dom.minidom.parseString(s).toprettyxml(indent=indent))
+
+
+async def JSONFormat(s: Union[str, Dict[str, Any]], indent: str = '    ') -> str:
+    """
+    :说明:
+        JSON 文本格式化
+    :参数:
+        s: 原 JSON 文本字符串/已解析的 dict
+        indent: 缩进字符
+    :返回:
+        格式化后的 JSON 文本
+    :参考:
+        REF [json.dumps](https://docs.python.org/zh-cn/3/library/json.html?highlight=json%20dumps#json.dumps)
+    """
+    if isinstance(s, str):
+        s = json.loads(s)
+    return json.dumps(s, indent=indent)
 
 
 class Handle(object):
 
-    def __init__(self):
+    handle = {  # 消息类型 -> 消息处理方法名
+        'at': 'Handle.at',  # @
 
-        self.handle = {
-            'at': Handle.at,  # @
-            'text': Handle.text,  # 文本
-            'face': Handle.face,  # 表情
-            'image': Handle.image,  # 图片
-            'record': Handle.record,  # 语音
-            'video': Handle.video,  # 短视频
-            'share': Handle.share,  # 分享链接
-            'reply': Handle.reply,  # 回复
-            'redbag': Handle.redbag,  # 红包
-            'gift': Handle.gift,  # 礼物
-            'xml': Handle.xml,  # XML
-            'json': Handle.json,  # JSON
-            'forward': Handle.forward,  # 转发
-        }
+        'text': 'Handle.text',  # 文本
+        'plain': 'Handle.text',  # 文本
+
+        'face': 'Handle.face',  # 表情
+        'image': 'Handle.image',  # 图片
+        'record': 'Handle.record',  # 语音
+        'video': 'Handle.video',  # 短视频
+        'share': 'Handle.share',  # 分享链接
+        'reply': 'Handle.reply',  # 回复
+        'redbag': 'Handle.redbag',  # 红包
+        'gift': 'Handle.gift',  # 礼物
+        'xml': 'Handle.xml',  # XML
+        'json': 'Handle.json',  # JSON
+        'forward': 'Handle.forward',  # 转发
+    }
+
+    def __init__(self):
+        pass
 
     async def __call__(self, t: str, *args, **kw) -> str:
-        return await self.handle.get(t, lambda _: f"[CQ:{t}]")(*args, **kw)
+        return await self.run(t, *args, **kw)
 
     @classmethod
-    async def at(cls, data, *args, **kw):
-        return f"@{data.get('qq')} "
+    async def run(cls, t: str, *args, **kw) -> str:
+        return await eval(cls.handle.get(t.lower(), f'lambda *args, **kw: "`[CQ:{t}]`"'))(*args, **kw)
 
     @classmethod
-    async def text(cls, data, *args, **kw):
+    async def at(cls, data: Dict[str, Any], *args, **kw):
+        return f"<u>@{data.get('qq')}</u>"
+
+    @classmethod
+    async def text(cls, data: Dict[str, Any], *args, **kw):
         return data.get('text')
 
     @classmethod
-    async def face(cls, data, *args, **kw):
+    async def face(cls, data: Dict[str, Any], *args, **kw):
         return f":qq-gif/{data.get('id')}:"
 
     @classmethod
-    async def image(cls, data, uploadPath, *args, **kw):
+    async def image(cls, data: Dict[str, Any], uploadPath: str, *args, **kw):
         file = await transferFile(
             downloadFunc=partial(
                 Download.image,
@@ -281,7 +334,7 @@ class Handle(object):
             return f'![{k}]({v})'
 
     @classmethod
-    async def record(cls, data, uploadPath, *args, **kw):
+    async def record(cls, data: Dict[str, Any], uploadPath: str, *args, **kw):
         file = await transferFile(
             downloadFunc=partial(
                 Download.record,
@@ -293,10 +346,11 @@ class Handle(object):
             return f'<audio controls="controls" src="{v}"></audio>'
 
     @classmethod
-    async def video(cls, data, uploadPath, *args, **kw):
+    async def video(cls, data: Dict[str, Any], uploadPath: str, *args, **kw):
         file = await transferFile(
             downloadFunc=partial(
                 Download.video,
+                url=data.get('url'),
                 file=data.get('file'),
             ),
             uploadPath=uploadPath,
@@ -305,7 +359,7 @@ class Handle(object):
             return f'<video controls="controls" src="{v}"></video>'
 
     @classmethod
-    async def share(cls, data, uploadPath, *args, **kw):
+    async def share(cls, data: Dict[str, Any], uploadPath: str, *args, **kw):
         url = data.get('url', "")
         title = data.get('title', "")
         content = data.get('content', "")
@@ -333,24 +387,49 @@ class Handle(object):
         return f"[[CQ:reply,qq={reply['sender']['user_id']},id={reply_message_id}]](siyuan://blocks/{reply_block_id})\n"
 
     @classmethod
-    async def redbag(cls, data, *args, **kw):
+    async def redbag(cls, data: Dict[str, Any], *args, **kw):
         return f"[CQ:redbag,title={data['title']}]"
 
     @classmethod
-    async def gift(cls, data, *args, **kw):
+    async def gift(cls, data: Dict[str, Any], *args, **kw):
         return f"[CQ:gift,qq={data['qq']},id={data['id']}]"
 
     @classmethod
-    async def xml(cls, data, *args, **kw):
-        pass
+    async def xml(cls, data: Dict[str, Any], indent: str = '    ', *args, **kw):
+        prefix = '<?xml version=\"1.0\" encoding=\"utf-8\"?>\n    '
+        xml_str = data.get('data').removeprefix(prefix)
+        xml_str = await XMLFormat(s=xml_str, indent=indent)
+        return f"```xml\n{xml_str}\n```"
 
     @classmethod
-    async def json(cls, data, *args, **kw):
-        pass
+    async def json(cls, data: Dict[str, Any], indent: str = '    ', *args, **kw):
+        json_str = await JSONFormat(s=data.get('data'), indent=indent)
+        return f"```json\n{json_str}\n```"
 
     @classmethod
-    async def forward(cls, data, *args, **kw):
-        pass
+    async def forward(cls, data: Dict[str, Any], bot: Bot, *args, **kw):
+        forward_msg = await bot.get_forward_msg(id=data.get('id'))
+        messages = forward_msg.get('messages')
+
+        l, r = '{', '}'
+        reply = []  # 各消息序列化后的字符串列表
+        for message in messages:  # 遍历转发的消息
+            # print(message)
+            msg = []  # 一条消息各组成元素序列化后的字符串列表
+            contents = cqparser.parseChain(message.get('content'))
+            for content in contents:  # 遍历一条消息的组成部分
+                # print(content)
+                msg.append(await cls.run(
+                    t=content.type,
+                    data=content.toDict().get('data'),
+                    *args,
+                    **kw,
+                ))
+            msg = re.sub(r"[\r\n]+", r"\n", ''.join(msg)).removeprefix('\n').removesuffix('\n')
+            sender = message.get('sender')
+            reply.append(f'{msg}\n{l}: custom-post-type="node" custom-sender-id="{sender.get("user_id")}" custom-sender-nickname="{sender.get("nickname")}" custom-time="{message.get("time")}{r}')
+
+        return "{{{row\n%s\n}}}" % '\n\n'.join(reply)
 
 
 handle = Handle()

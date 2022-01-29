@@ -120,7 +120,7 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent, state: T_State):
                 event=event_body,
                 is_message=False,
             )
-            print(data)
+            # print(data)
             r = await api.post(
                 url=api.url.appendBlock,
                 body={
@@ -171,6 +171,7 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State):
                 t=msg_type,
                 data=msg.get('data'),
                 uploadPath=uploadPath,
+                bot=bot,
             ))
 
         data = await blockFormat(
@@ -178,7 +179,7 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State):
             event=event_body,
             have_text=have_text,
         )
-        print(data)
+        # print(data)
         r = await api.post(
             url=api.url.appendBlock,
             body={
@@ -194,5 +195,5 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State):
         logger.error(f"思源 API HTTP 响应错误 e:{e}")
     except SiyuanAPIException as e:
         logger.error(f"思源 API 内核错误 e:{e}")
-    # except Exception as e:
-    #     logger.error(f"群消息处理错误 e:{e}")
+    except Exception as e:
+        logger.error(f"群消息处理错误 e:{e}")
