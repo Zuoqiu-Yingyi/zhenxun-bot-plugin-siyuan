@@ -129,7 +129,7 @@ class Download:
 
 async def eventBodyParse(event: str) -> Dict[str, Any]:
     body = json.loads(event)
-    # print(body)
+    print(body)
     return body
 
 
@@ -383,8 +383,16 @@ class Handle(object):
                 "stmt": f"SELECT block_id FROM attributes WHERE name = 'custom-message-id' AND value = '{reply_message_id}'"
             },
         )
-        reply_block_id = r.data[0].get('block_id')
-        return f"[[CQ:reply,qq={reply['sender']['user_id']},id={reply_message_id}]](siyuan://blocks/{reply_block_id})\n"
+        if len(r.data) > 0:  # 从收集箱中查询到了所回复消息对应的块
+            reply_block_id = r.data[0].get('block_id')
+
+            # 块引用
+            return f'(({reply_block_id} "[CQ:reply,qq={reply["sender"]["user_id"]},id={reply_message_id}]"))\n'
+
+            # 块超链接
+            # return f"[[CQ:reply,qq={reply['sender']['user_id']},id={reply_message_id}]](siyuan://blocks/{reply_block_id})\n"
+        else:  # 未从收集箱中查询到了所回复消息对应的块
+            return f"*[CQ:reply,qq={reply['sender']['user_id']},id={reply_message_id}]*\n"
 
     @classmethod
     async def redbag(cls, data: Dict[str, Any], *args, **kw):
