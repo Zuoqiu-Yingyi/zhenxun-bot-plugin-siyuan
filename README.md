@@ -18,11 +18,30 @@ QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [�
 
 ## 预览 | PREVIEW
 
+![聊天窗口-消息发送-文件上传](image/README/1643477136832.png)
+
+![聊天窗口-消息发送-文件上传](image/README/1643477512932.png)
+
 ## 功能 | FUNCTION
 
 1. 将一个群设置为收集箱时会在绑定的文档下级新建一个子文档作为今日的收集箱(文档标题为当前日期)作为今日的收集箱
 2. 每天 00:00:01 时刻会为每个作为收集箱的群绑定的文档新建一个子文档作为当日的收集箱(文档标题为当日日期)
 3. 上传群中所有的资源文件并插入到文档中
+   - 块属性
+     - `custom-post-type="notice"` 消息类型: 群通知
+     - `custom-sender-id="0123456789"` 文件上传者ID: QQ号
+     - `custom-time="1643450342"` 通知发送时间: 文件上传时间
+   - 回复内容: 
+     - `一个文件名`: 刚刚上传文件的文件名
+       - `新文档.docx`
+       - `<文件名(不带ID).<文件扩展名>>`
+     - `一个超链接`: 可以跳转到刚刚插入的块的超链接(需要配合 `theme.js` 使用, 详情见安装教程第 6 步)
+       - `https://your.domain.name:6806/stage/build/desktop/?id=20220129235304-436oqnz`
+       - `http(s)://<主机名>:<端口号>/stage/build/desktop/?id=<刚刚插入块的ID>`
+     - `一个 URL`, 可以引用刚刚插入资源的 URL(若设置了访问授权码则需要登录后获得 `cookie` 才能正确请求资源)
+     - `一个 URL`: 可以从腾讯文件服务器下载该资源的 URL, 没有鉴权
+       - `http://109.244.227.121/ftn_handler/0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef/?fname=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789`
+       - `http://<文件服务器的IP>/ftn_handler/<128个16进制字符(512位)的文件哈希值>/?fname=<74个16进制字符(296位)的文件名编码>`
    - 资源文件类型
      - 消息中的图片 -> 上传图片并使用图片链接嵌入
        - `![e70aadf3faa3f0f07bec09eba9536b64.image](assets/e70aadf3faa3f0f07bec09eba9536b64-20220129192227-o198hch.image)`
@@ -37,6 +56,14 @@ QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [�
        - `<video controls="controls" src="assets/2a11ba9ec31df24f9ed7acb79fe30d87-20220129235304-545xewt.video"></video>`
        - `<video controls="controls" src="assets/视频文件名-<文件ID>.<扩展名>))"></video>`
 4. 解析群中的所有消息
+   - 块属性
+     - `custom-post-type="message"` 消息类型: 群消息
+     - `custom-message-id="-1689421685"` 群消息ID: 消息ID
+     - `custom-message-seq="-1689421685"` 群消息序号: 该群第n条消息
+     - `custom-sender-id="0123456789"` 消息发送者ID: QQ号
+     - `custom-sender-nickname="昵称"` 消息发送者昵称: QQ昵称
+     - `custom-sender-card="群名片/群备注"` 消息发送者群备注姓名: 备注姓名
+     - `custom-time="1643450342"` 该消息发送时间: 消息发送时间
    - 普通文本消息 -> 移除空行, 构造并插入一个块(可以直接插入 Markdown 语句)
      - 消息中只有一个超链接 -> 渲染为超链接
        - `[https://ld246.com/article/1643468500328](https://ld246.com/article/1643468500328)`
@@ -55,6 +82,11 @@ QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [�
      - 若未从收集箱中搜索到被回复的消息对应的块
        - `[CQ:reply,qq=<被回复块的发送者>,id=<被回复块的消息ID>]`
    - 合并转发消息 -> 解析转发的所有消息, 构造并插入一个纵向排列的超级块(不能再次嵌套合并转发消息, 再次嵌套将解析为 XML 消息)
+     - 合并转发消息内各节点构造的内容块的块属性
+       - `custom-post-type="node"` 消息类型: 合并转发节点
+       - `custom-sender-id="0123456789"` 被转发消息的发送者ID: QQ号
+       - `custom-sender-nickname="昵称"` 被转发消息的发送者昵称: QQ昵称
+       - `custom-time="1643450342"` 被转发消息实际发送时间: 消息发送时间
      - ```markdown
        {{{row
        <!-- 每一条消息构成超级块内的一个子块 -->
@@ -90,6 +122,18 @@ QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [�
            "view": "shareView"
        }
        ```
+   - 其他消息 -> CQ 码, 详情请查看 [CQcode | go-cqhttp 帮助中心](https://docs.go-cqhttp.org/cqcode/)
+     - `[CQ:<消息类型>[, <键>=<值>[, ...]]]`
+     - `[CQ:redbag,title=<标题>]` 红包消息
+     - `[CQ:gift,qq=<目标用户QQ>,id=<礼物ID>]` 礼物消息
+     - `[CQ:<消息类型>]` 其他消息
+       - `[CQ:rps]` 猜拳魔法表情
+       - `[CQ:dice]` 掷骰子魔法表情
+       - `[CQ:shake]` 窗口抖动
+       - `[CQ:contact]` 推荐好友/群
+       - `[CQ:location]` 位置
+       - `[CQ:poke]` 戳一戳
+       - `[CQ:cardimage]` 图片卡片
 
 ## 开始 | START
 
@@ -146,7 +190,7 @@ QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [�
 6. 使用 `theme.js` 为思源笔记添加使用 URL 参数跳转指定块的功能
    - 带参 URL 示例: `https://your.domain.name:6806/stage/build/desktop/?id=20220128232710-huurm0y`
      - 该参数可以在从当前聚焦的页签中切换到 id 为 `20220128232710-huurm0y` 的块
-   - 主题 `Dark+` 已内置了该功能, 详情请参考 [Zuoqiu-Yingyi/siyuan-theme-dark-plus](https://github.com/Zuoqiu-Yingyi/siyuan-theme-dark-plus)
+   - 主题 `Dark+` 的 `v0.2.0+` 版本已内置了该功能, 若使用该主题 `v0.2.0+` 版本可跳过该步骤, 详情请参考 [Zuoqiu-Yingyi/siyuan-theme-dark-plus](https://github.com/Zuoqiu-Yingyi/siyuan-theme-dark-plus)
    - 其他主题可以将如下 js 片段放在文件 `<工作空间>/conf/appearance/themes/<主题名>/theme.js` 开头(若没有该文件新建即可)
      ```js
      function loadScript(url) {
@@ -224,7 +268,7 @@ QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [�
 10.  使用超级用户账户向机器人账户发送如下命令进行收集箱管理
    - `添加到收集箱 [笔记本ID/文档路径] [群号]`
      - 示例: `添加到收集箱 20220128203353-2p55r7q/20220128203409-j5553g7.sy 123456789`
-     - `[文档路径完整路径]` 需要填写第 6 步获得的文档完整路径, 这里是 `20220128203353-2p55r7q/20220128203409-j5553g7.sy`
+     - `[文档路径完整路径]` 需要填写第 8 步获得的文档完整路径, 这里是 `20220128203353-2p55r7q/20220128203409-j5553g7.sy`
      - `[群号]` 需要填写作为收集箱的群号(机器人必须已经加入该群), 这里是 `123456789`, 该群与 ID 为 `20220128203409-j5553g7` 的文档绑定
        - 注意: 一旦完成绑定, 该文档不可移动, 若需要移动则需要移除收集箱后重新添加收集箱
      - 注: 添加到该收集箱的资源文件在这里会放置在 `20220128203353-2p55r7q/20220128203409-j5553g7/assets/` 目录下
