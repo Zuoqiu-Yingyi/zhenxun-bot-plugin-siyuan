@@ -129,7 +129,7 @@ class Download:
 
 async def eventBodyParse(event: str) -> Dict[str, Any]:
     body = json.loads(event)
-    print(body)
+    # print(body)
     return body
 
 
@@ -314,7 +314,14 @@ class Handle(object):
 
     @classmethod
     async def text(cls, data: Dict[str, Any], *args, **kw):
-        return data.get('text')
+        # REF [正则表达式匹配URL - 禅趣 - 博客园](https://www.cnblogs.com/wang1593840378/p/6095500.html)
+        href = r"((ht|f)tps?):\/\/([\w\-]+(\.[\w\-]+)*\/)*[\w\-]+(\.[\w\-]+)*\/?(\?([\w\-\.,@?^=%&:\/~\+#]*)+)?"
+        t = data.get('text')
+
+        if re.fullmatch(href, t) is not None:  # 整个文本是一个超链接
+            t = f"[{t}]({t})"
+
+        return t
 
     @classmethod
     async def face(cls, data: Dict[str, Any], *args, **kw):
@@ -392,15 +399,15 @@ class Handle(object):
             # 块超链接
             # return f"[[CQ:reply,qq={reply['sender']['user_id']},id={reply_message_id}]](siyuan://blocks/{reply_block_id})\n"
         else:  # 未从收集箱中查询到了所回复消息对应的块
-            return f"*[CQ:reply,qq={reply['sender']['user_id']},id={reply_message_id}]*\n"
+            return f"`[CQ:reply,qq={reply['sender']['user_id']},id={reply_message_id}]`\n"
 
     @classmethod
     async def redbag(cls, data: Dict[str, Any], *args, **kw):
-        return f"[CQ:redbag,title={data['title']}]"
+        return f"`[CQ:redbag,title={data['title']}]`"
 
     @classmethod
     async def gift(cls, data: Dict[str, Any], *args, **kw):
-        return f"[CQ:gift,qq={data['qq']},id={data['id']}]"
+        return f"`[CQ:gift,qq={data['qq']},id={data['id']}]`"
 
     @classmethod
     async def xml(cls, data: Dict[str, Any], indent: str = '    ', *args, **kw):
