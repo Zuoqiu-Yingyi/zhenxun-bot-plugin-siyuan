@@ -14,7 +14,7 @@
 
 QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [思源笔记](https://github.com/siyuan-note/siyuan) 插件, 可以将 QQ 群转化为思源笔记的收集箱
 
-您需要订阅思源笔记的增值服务，欢迎使用我的推荐码: **`h0sc9rc`** (\*^▽^\*)
+如果需要订阅思源笔记的增值服务，欢迎使用我的推荐码: **`h0sc9rc`** (\*^▽^\*)
 
 ## 预览 | PREVIEW
 
@@ -24,9 +24,11 @@ QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [�
 
 ## 功能 | FUNCTION
 
-1. 将一个群设置为收集箱时会在绑定的文档下级新建一个子文档作为今日的收集箱(文档标题为当前日期)作为今日的收集箱
-2. 每天 00:00:01 时刻会为每个作为收集箱的群绑定的文档新建一个子文档作为当日的收集箱(文档标题为当日日期)
-3. 上传群中所有的资源文件并插入到文档中
+1. 将一个群设置为收集箱时, 在绑定的文档下级会新建一个子文档作为今日的收集箱
+   - 文档标题为当前日期
+2. 每日 00:00:01 时, 在每个绑定的文档下级都会新建一个子文档作为当日的收集箱
+   - 文档标题为当日日期
+3. 上传群资源文件并插入到文档中
    - 块属性
      - `custom-post-type="notice"` 消息类型: 群通知
      - `custom-sender-id="0123456789"` 文件上传者ID: QQ号
@@ -38,21 +40,21 @@ QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [�
      - `一个超链接`: 可以跳转到刚刚插入的块的超链接(需要配合 `theme.js` 使用, 详情见安装教程第 6 步)
        - `https://your.domain.name:6806/stage/build/desktop/?id=20220129235304-436oqnz`
        - `http(s)://<主机名>:<端口号>/stage/build/desktop/?id=<刚刚插入块的ID>`
-     - `一个 URL`, 可以引用刚刚插入资源的 URL(若设置了访问授权码则需要登录后获得 `cookie` 才能正确请求资源)
-     - `一个 URL`: 可以从腾讯文件服务器下载该资源的 URL, 没有鉴权
+     - `一个 URL`, 可以引用刚刚插入资源的 URL(若设置了访问授权码, 则登录后获得 `cookie` 才能正确请求资源)
+     - `一个 URL`: 可以从 QQ 的文件服务器中下载文件的直链 URL, 没有鉴权
        - `http://109.244.227.121/ftn_handler/0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef/?fname=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789`
        - `http://<文件服务器的IP>/ftn_handler/<128个16进制字符(512位)的文件哈希值>/?fname=<74个16进制字符(296位)的文件名编码>`
    - 资源文件类型
-     - 消息中的图片 -> 上传图片并使用图片链接嵌入
+     - 消息中的图片 -> 上传图片并嵌入图片链接
        - `![e70aadf3faa3f0f07bec09eba9536b64.image](assets/e70aadf3faa3f0f07bec09eba9536b64-20220129192227-o198hch.image)`
        - `![图片文件名](assets/图片文件名-<文件ID>.<扩展名>))`
-     - 上传的群文件 -> 上传文件并使用超链接嵌入
+     - 上传的群文件 -> 上传文件并嵌入文件链接
        - `[新文档.docx](assets/新文档-20220129171811-hsqksm3.docx)`
        - `[文件名](assets/文件名-<文件ID>.<扩展名>)`
-     - 语音消息 -> 上传文件并使用音频块嵌入
+     - 语音消息 -> 上传文件并嵌入音频块
        - `<audio controls="controls" src="assets/record1623120470117-20220129175651-lgbokxe.wav"></audio>`
        - `<audio controls="controls" src="assets/音频文件名-<文件ID>.<扩展名>))"></audio>`
-     - 视频消息 -> 上传文件并使用视频块嵌入
+     - 视频消息 -> 上传文件并嵌入视频块
        - `<video controls="controls" src="assets/2a11ba9ec31df24f9ed7acb79fe30d87-20220129235304-545xewt.video"></video>`
        - `<video controls="controls" src="assets/视频文件名-<文件ID>.<扩展名>))"></video>`
 4. 解析群中的所有消息
