@@ -18,13 +18,13 @@ usage:
     思源笔记收集箱管理
     管理作为收集箱的群, 可以将该群所有的消息/内容发送到指定路径中
     指令:
-        添加到收集箱 [笔记本ID/文档路径] *[群号]
+        添加到收集箱 [文档路径完整路径] [群号]
         从收集箱移除 *[群号]
         列出收集箱
 """.strip()
 __plugin_des__ = "管理作为思源收集箱的群"
 __plugin_cmd__ = [
-    "设置为收集箱 [doc_path] *[group_id]",
+    "设置为收集箱 [doc_path] [group_id]",
     "从收集箱移除 *[group_id]",
     "列出收集箱",
 ]
@@ -81,6 +81,7 @@ async def _(bot: Bot, event: MessageEvent, state: T_State):
                     )
                     await siyuan_manager.updateParentID(group_id=group_id, doc_id=doc_id)
                     success_list.append(group_id)
+                    break
             elif state['_prefix']['raw_command'] in ["从收集箱移除"]:
                 if await siyuan_manager.deleteInbox(group_id=group_id):
                     success_list.append(group_id)
