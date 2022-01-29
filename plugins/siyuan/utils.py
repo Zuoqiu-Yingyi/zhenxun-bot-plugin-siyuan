@@ -12,6 +12,7 @@ from typing import (
     Dict,
     Tuple,
     Union,
+    Optional,
 )
 
 from nonebot.adapters.cqhttp import (
@@ -129,7 +130,7 @@ class Download:
 
 async def eventBodyParse(event: str) -> Dict[str, Any]:
     body = json.loads(event)
-    # print(body)
+    print(body)
     return body
 
 
@@ -178,7 +179,7 @@ async def transferFile(downloadFunc: partial, uploadPath: str) -> Dict[str, str]
             return response.data['succMap']
 
 
-async def createDoc(notebook: str, path: str, date: datetime = datetime.now(), title: str = None) -> str:
+async def createDoc(notebook: str, path: str, date: Optional(datetime) = None, title: str = None) -> str:
     """
     :说明:
         创建指定日期的文档
@@ -198,7 +199,10 @@ async def createDoc(notebook: str, path: str, date: datetime = datetime.now(), t
         },
     )
     hpath = r.data
+
+    date = datetime.now() if date is None else date
     title = f"{date:%F}" if title is None else title
+
     r = await api.post(
         url=api.url.createDocWithMd,
         body={

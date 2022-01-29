@@ -20,33 +20,75 @@ QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [�
 
 ## 功能 | FUNCTION
 
-1. 上传群中所有的资源文件并插入到文档中
+1. 将一个群设置为收集箱时会在绑定的文档下级新建一个子文档作为今日的收集箱(文档标题为当前日期)作为今日的收集箱
+2. 每天 00:00:01 时刻会为每个作为收集箱的群绑定的文档新建一个子文档作为当日的收集箱(文档标题为当日日期)
+3. 上传群中所有的资源文件并插入到文档中
    - 资源文件类型
      - 消息中的图片 -> 上传图片并使用图片链接嵌入
+       - `![e70aadf3faa3f0f07bec09eba9536b64.image](assets/e70aadf3faa3f0f07bec09eba9536b64-20220129192227-o198hch.image)`
        - `![图片文件名](assets/图片文件名-<文件ID>.<扩展名>))`
-     - 上传的群文件 -> 上传文件并使用超链接嵌入 
-       - `[文件名](assets/文件名-<文件ID>.<扩展名>))`
-     - 语音消息 -> 上传文件并使用音频块嵌入 
+     - 上传的群文件 -> 上传文件并使用超链接嵌入
+       - `[新文档.docx](assets/新文档-20220129171811-hsqksm3.docx)`
+       - `[文件名](assets/文件名-<文件ID>.<扩展名>)`
+     - 语音消息 -> 上传文件并使用音频块嵌入
+       - `<audio controls="controls" src="assets/record1623120470117-20220129175651-lgbokxe.wav"></audio>`
        - `<audio controls="controls" src="assets/音频文件名-<文件ID>.<扩展名>))"></audio>`
-     - 视频消息 -> 上传文件并使用视频块嵌入 
+     - 视频消息 -> 上传文件并使用视频块嵌入
+       - `<video controls="controls" src="assets/2a11ba9ec31df24f9ed7acb79fe30d87-20220129235304-545xewt.video"></video>`
        - `<video controls="controls" src="assets/视频文件名-<文件ID>.<扩展名>))"></video>`
-2. 解析群中的所有消息
+4. 解析群中的所有消息
    - 普通文本消息 -> 移除空行, 构造并插入一个块(可以直接插入 Markdown 语句)
+     - 消息中只有一个超链接 -> 渲染为超链接
+       - `[https://ld246.com/article/1643468500328](https://ld246.com/article/1643468500328)`
+       - `[超链接URL](超链接URL)`
    - QQ 表情 -> 引用思源笔记 `<工作空间>/data/emojis/qq-gif/` 目录下的动态表情图片 (详情见安装教程第 7 步)
+     - `:qq-gif/174:`
      - `:qq-gif/<表情ID>:`
    - 图文混排 -> 移除空行, 保持混排样式构造并插入一个块(也可以使用 Markdown 插入网络图片)
    - @群成员 -> <u>@<QQ号></u>
+     - `<u>@0123456789</u>`
      - `<u>@<QQ号></u>`
    - 回复消息 ->
      - 若从收集箱中搜索到被回复的消息对应的块, 创建该块的块引用
+       - `((20220129171554-j5m8g2p "[CQ:reply,qq=0123456789,id=-67072678]"))`
        - `((<被回复块的块ID> "[CQ:reply,qq=<被回复块的发送者>,id=<被回复块的消息ID>]"))`
      - 若未从收集箱中搜索到被回复的消息对应的块
        - `[CQ:reply,qq=<被回复块的发送者>,id=<被回复块的消息ID>]`
-   - 合并转发消息 -> 解析转发的所有消息, 构造并插入一个纵向排列的超级块
+   - 合并转发消息 -> 解析转发的所有消息, 构造并插入一个纵向排列的超级块(不能再次嵌套合并转发消息, 再次嵌套将解析为 XML 消息)
      - ```markdown
        {{{row
-
+       <!-- 每一条消息构成超级块内的一个子块 -->
        }}}
+       ```
+   - 分享链接 -> 带锚文本与标题的超链接(可能带有图片)
+   - XML 消息 -> 一种卡片式消息, 构造并插入一个含有格式化后 xml 对象的代码块
+     - ```xml
+       <?xml version="1.0" ?>
+       <msg brief="[聊天记录]" m_fileName="MultiMsg_F896B299-7613-4D4B-8E12-ADA0DC9CB92A" action="viewMultiMsg" tSum="2" flag="3" serviceID="35" m_fileSize="100">
+            <item layout="1">
+                <title color="#000000" size="34">  群聊的聊天记录  </title>
+                <title color="#000000" size="26">  A:@B ABCDEF  </title>
+                <title color="#000000" size="26">  B:[分享]0123456  </title>
+                <hr/>
+                <summary color="#808080" size="26"> 查看转发消息  </summary>
+            </item>
+            <source name="聊天记录"/>
+        </msg>
+       ```
+   - JSON 消息 -> 一种卡片式消息, 构造并插入一个含有格式化后 json 对象的代码块
+     - ```json
+       {
+           "app": "com.tencent.wezone.share",
+           "config": {
+               "autosize": 0,
+               "ctime": 1643446171,
+               "token": "ea5a33fe6a74cde7cdfb40a6262dfe18"
+           },
+           "desc": "",
+           "prompt": "\u5206\u4eab\u4e86\u6765\u81ea\u5c0f\u4e16\u754c\u7684\u4f5c\u54c1",
+           "ver": "1.0.0.5",
+           "view": "shareView"
+       }
        ```
 
 ## 开始 | START
