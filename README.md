@@ -12,7 +12,9 @@
 
 </center>
 
-绪山真寻 bot 的思源笔记插件
+QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [思源笔记](https://github.com/siyuan-note/siyuan) 插件, 可以将 QQ 群转化为思源笔记的收集箱
+
+您需要订阅思源笔记的增值服务，欢迎使用我的推荐码: **`h0sc9rc`** (\*^▽^\*)
 
 ## 预览 | PREVIEW
 
@@ -31,7 +33,16 @@
    - 安装教程: [安装真寻Bot | 绪山真寻Bot](https://hibikier.github.io/zhenxun_bot/docs/installation_doc/install_zhenxun.html)
    - 项目文档: [绪山真寻Bot](https://hibikier.github.io/zhenxun_bot/)
    - 项目仓库: [GitHub - HibiKier/zhenxun_bot: 基于 Nonebot2 和 go-cqhttp 开发，以 postgresql 作为数据库，非常可爱的绪山真寻bot](https://github.com/HibiKier/zhenxun_bot)
-4. 配置插件选项
+4. 额外安装本插件的依赖包
+   - 使用 `pip` 安装
+     ```bash
+     pip install httpx
+     ```
+   - 或者, 使用 `conda` 安装
+     ```bash
+     conda install httpx -c conda-forge
+     ```
+5. 配置插件选项
    - 打开文件 `data/configs/plugins2config.yaml`
    - 填写如下 5 个字段的 `value` 与 `default_value` 值
      - `SIYUAN_HOST`: 思源笔记内核所在主机名
@@ -59,7 +70,7 @@
        - 示例: `'https://your.domain.name:6806'`
        - 说明: 使用 `http` 协议与 `80` 端口或使用 `https` 协议与 `443` 端口可以省略端口号, 请确保 `<该字段值>/stage/build/desktop/` 可以进入思源笔记主界面, 
        - 备注: 该字段用于生成一个指向刚刚插入块的 URL
-5. 使用 `theme.js` 为思源笔记添加使用 URL 参数跳转指定块的功能
+6. 使用 `theme.js` 为思源笔记添加使用 URL 参数跳转指定块的功能
    - 带参 URL 示例: `https://your.domain.name:6806/stage/build/desktop/?id=20220128232710-huurm0y`
      - 该参数可以在从当前聚焦的页签中切换到 id 为 `20220128232710-huurm0y` 的块
    - 主题 `Dark+` 已内置了该功能, 详情请参考 [Zuoqiu-Yingyi/siyuan-theme-dark-plus](https://github.com/Zuoqiu-Yingyi/siyuan-theme-dark-plus)
@@ -126,13 +137,13 @@
      }
      window.onload = setTimeout(jumpToID(), 0)
      ```
-6. 在 bot 访问的思源笔记本 Web 端中选择一个文档作为收集箱(选择笔记本内的一个文档而非笔记本), 并记录该文档的绝对路径
+7. 在 bot 访问的思源笔记本 Web 端中选择一个文档作为收集箱(选择笔记本内的一个文档而非笔记本), 并记录该文档的绝对路径
    - 假设选择在 `收集箱` 笔记本内的 `Inbox` 文档作为收集箱, 该文档的 ID 为 `20220128203409-j5553g7` (可以从该文档的右键菜单中获取文档的 ID)
    - 从文件系统中搜索 `20220128203409-j5553g7.sy` 文件, 并获得该文件相对于 `<工作空间>/data/` 目录的路径, 例如 `20220128203353-2p55r7q/20220128203409-j5553g7.sy`
      - 其中 `20220128203353-2p55r7q/` 为 `收集箱` 笔记本的目录
      - 其中 `20220128203409-j5553g7.sy` 为 `Inbox` 文档的数据文件
-7. 依次启动 `go-cqhttp`, `Postgresql` 与 `绪山真寻 bot`
-8. 使用超级用户账户向机器人账户发送如下命令进行收集箱管理
+8. 依次启动 `go-cqhttp`, `Postgresql` 与 `绪山真寻 bot`
+9.  使用超级用户账户向机器人账户发送如下命令进行收集箱管理
    - `添加到收集箱 [笔记本ID/文档路径] [群号]`
      - 示例: `添加到收集箱 20220128203353-2p55r7q/20220128203409-j5553g7.sy 123456789`
      - `[文档路径完整路径]` 需要填写第 6 步获得的文档完整路径, 这里是 `20220128203353-2p55r7q/20220128203409-j5553g7.sy`
