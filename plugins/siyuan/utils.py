@@ -179,7 +179,7 @@ async def transferFile(downloadFunc: partial, uploadPath: str) -> Dict[str, str]
             return response.data['succMap']
 
 
-async def createDoc(notebook: str, path: str, date: Optional(datetime) = None, title: str = None) -> str:
+async def createDoc(notebook: str, path: str, date: Optional[datetime] = None, title: str = None) -> str:
     """
     :说明:
         创建指定日期的文档
@@ -386,7 +386,14 @@ class Handle(object):
         return f'{image}\n[{content}]({url} "{title}")'.removeprefix('\n')
 
     @classmethod
-    async def reply(cls, reply, *args, **kw):
+    async def reply(cls, reply: Union[Dict[str, Any], None] = None, *args, **kw):
+        if reply is None:  # 合并转发消息中的回复消息
+            data = kw.get('data')
+            if data is not None:
+                return f"`[CQ:reply,id={data.get('id')}]`\n"
+            else:
+                return "`[CQ:reply]`\n"
+
         reply_message_id = reply.get('message_id')
         r = await api.post(
             url=api.url.sql,
@@ -438,9 +445,10 @@ class Handle(object):
             contents = cqparser.parseChain(message.get('content'))
             for content in contents:  # 遍历一条消息的组成部分
                 # print(content)
+                content_dict = content.toDict()
                 msg.append(await cls.run(
                     t=content.type,
-                    data=content.toDict().get('data'),
+                    data=content_dict.get('data'),
                     *args,
                     **kw,
                 ))
