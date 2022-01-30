@@ -152,18 +152,21 @@ QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [�
    - 安装教程: [安装真寻Bot | 绪山真寻Bot](https://hibikier.github.io/zhenxun_bot/docs/installation_doc/install_zhenxun.html)
    - 项目文档: [绪山真寻Bot](https://hibikier.github.io/zhenxun_bot/)
    - 项目仓库: [GitHub - HibiKier/zhenxun_bot: 基于 Nonebot2 和 go-cqhttp 开发，以 postgresql 作为数据库，非常可爱的绪山真寻bot](https://github.com/HibiKier/zhenxun_bot)
-4. 额外安装本插件的依赖包
-   - 使用 `pip` 安装
-     ```bash
-     pip install httpx
-     ```
-   - 或者, 使用 `conda` 安装
-     ```bash
-     conda install httpx -c conda-forge
-     ```
-5. 配置插件选项
+4. 额外安装本插件的依赖包并安装本插件
+   - 安装依赖包 `httpx`
+     - 使用 `pip` 安装
+       ```bash
+       pip install httpx
+       ```
+     - 或者, 使用 `conda` 安装
+       ```bash
+       conda install httpx -c conda-forge
+       ```
+   - 安装本插件
+     - 将本插件项目中的 `/plugins/siyuan` 目录移动到 `绪山真寻 Bot` 程序目录中的 `<绪山真寻Bot程序根目录>/plugins/siyuan`
+5. 安装本插件完成后运行一次 `绪山真寻 Bot`, 会生成插件配置选项, 进行插件配置
    - 打开文件 `data/configs/plugins2config.yaml`
-   - 填写如下 5 个字段的 `value` 与 `default_value` 值
+   - 搜索并填写如下 5 个字段的 `value` 与 `default_value` 值
      - `SIYUAN_HOST`: 思源笔记内核所在主机名
        - 类型: 字符串
        - 示例: `'localhost'`
@@ -189,6 +192,7 @@ QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [�
        - 示例: `'https://your.domain.name:6806'`
        - 说明: 使用 `http` 协议与 `80` 端口或使用 `https` 协议与 `443` 端口可以省略端口号, 请确保 `<该字段值>/stage/build/desktop/` 可以进入思源笔记主界面, 
        - 备注: 该字段用于生成一个指向刚刚插入块的 URL
+   - 配置完成后需要重新启动 `绪山真寻 Bot`
 6. 使用 `theme.js` 为思源笔记添加使用 URL 参数跳转指定块的功能
    - 带参 URL 示例: `https://your.domain.name:6806/stage/build/desktop/?id=20220128232710-huurm0y`
      - 该参数可以在从当前聚焦的页签中切换到 id 为 `20220128232710-huurm0y` 的块
