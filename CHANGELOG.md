@@ -1,5 +1,9 @@
 # 更改日志 | CHANGE LOG
 
+## v0.1.2/2022-01-30
+
+[v0.1.1 <=> v0.1.2](https://github.com/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan/compare/v0.1.1...v0.1.2)
+
 - 修复 `Optional` 参数检查错误
 - 修复合并转发中回复消息处理异常
 
