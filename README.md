@@ -12,7 +12,7 @@
 
 </center>
 
-QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [思源笔记](https://github.com/siyuan-note/siyuan) 插件, 可以将 QQ 群转化为思源笔记的收集箱
+可爱的 QQ 机器人 [绪山真寻 Bot](https://hibikier.github.io/zhenxun_bot/) 的 [思源笔记](https://github.com/siyuan-note/siyuan) 插件, 可以将 QQ 群转化为思源笔记的收集箱
 
 如果需要订阅思源笔记的增值服务，欢迎使用我的推荐码: **`h0sc9rc`** (\*^▽^\*)
 
@@ -338,7 +338,7 @@ siyuan:
 
 ## 依赖 & 参考 & 感谢 | DEPENDENCE & REFERENCE & THANKS
 
-| 项目 \| Project                                        | 仓库 \| Reop                                                                                                           | 作者 \| Author                                       | 许可证 \| License                                                                      |
+| 项目 \| Project                                        | 仓库 \| Repo                                                                                                           | 作者 \| Author                                       | 许可证 \| License                                                                      |
 | :----------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------- | :--------------------------------------------------- | :------------------------------------------------------------------------------------- |
 | [绪山真寻Bot](https://hibikier.github.io/zhenxun_bot/) | [GitHub - HibiKier/zhenxun_bot](https://github.com/HibiKier/zhenxun_bot)                                               | **[HibiKier](https://github.com/HibiKier)**          | *[AGPL\-3.0 License](https://github.com/HibiKier/zhenxun_bot/blob/main/LICENSE)*       |
 | [NoneBot](https://v2.nonebot.dev/)                     | [GitHub - nonebot/nonebot2](https://github.com/nonebot/nonebot2)                                                       | **[NoneBot](https://github.com/nonebot)**            | *[MIT License](https://github.com/nonebot/nonebot2/blob/master/LICENSE)*               |
