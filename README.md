@@ -49,13 +49,15 @@
        - `https://your.domain.name:6806/stage/build/desktop/?id=20220129235304-436oqnz`
        - `http(s)://<主机名>:<端口号>/stage/build/desktop/?id=<刚刚插入块的ID>`
      - `一个 URL`, 可以引用刚刚插入资源的 URL(若设置了访问授权码, 则登录后获得 `cookie` 才能正确请求资源)
+       - `https://your.domain.name:6806/assets/Security_SSL_96px-20220129004744-se0iim1.png)`
+       - `http(s)://<主机名>:<端口号>/assets/<文件名>-<文件ID>.<扩展名>)`
      - `一个 URL`: 可以从 QQ 的文件服务器中下载文件的直链 URL, 没有鉴权
        - `http://109.244.227.121/ftn_handler/0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef/?fname=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789`
        - `http://<文件服务器的IP>/ftn_handler/<128个16进制字符(512位)的文件哈希值>/?fname=<74个16进制字符(296位)的文件名编码>`
    - 资源文件类型
      - 消息中的图片 -> 上传图片并嵌入图片链接
        - `![e70aadf3faa3f0f07bec09eba9536b64.image](assets/e70aadf3faa3f0f07bec09eba9536b64-20220129192227-o198hch.image)`
-       - `![图片文件名](assets/图片文件名-<文件ID>.<扩展名>))`
+       - `![图片文件名](assets/<图片文件名>-<文件ID>.<扩展名>))`
      - 上传的群文件 -> 上传文件并嵌入文件链接
        - `[新文档.docx](assets/新文档-20220129171811-hsqksm3.docx)`
        - `[文件名](assets/文件名-<文件ID>.<扩展名>)`
