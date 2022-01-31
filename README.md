@@ -2,13 +2,14 @@
 
 <center>
 
-![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan?include_prereleases)
-![GitHub Release Date](https://img.shields.io/github/release-date/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan)
-![GitHub](https://img.shields.io/github/license/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan)
-![GitHub last commit](https://img.shields.io/github/last-commit/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan)
-![GitHub repo size](https://img.shields.io/github/repo-size/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan)
-![jsDelivr hits (GitHub)](https://img.shields.io/jsdelivr/gh/hy/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan?label=hits)
-![GitHub all releases](https://img.shields.io/github/downloads/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan/total)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan?include_prereleases&style=flat-square)
+![GitHub Release Date](https://img.shields.io/github/release-date/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan?style=flat-square)
+![GitHub](https://img.shields.io/github/license/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan?style=flat-square)
+![GitHub last commit](https://img.shields.io/github/last-commit/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan?style=flat-square)
+![GitHub repo size](https://img.shields.io/github/repo-size/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan?style=flat-square)
+<!-- ![jsDelivr hits (GitHub)](https://img.shields.io/jsdelivr/gh/hy/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan?label=hits&style=flat-square) -->
+![hits](https://hits.b3log.org/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan.svg)
+![GitHub all releases](https://img.shields.io/github/downloads/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan/total?style=flat-square)
 
 </center>
 

@@ -2,13 +2,13 @@
 
 ## v0.1.2/2022-01-30
 
-[v0.1.1 <=> v0.1.2](https://github.com/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan/compare/v0.1.1...v0.1.2)
-
+- [v0.1.1 <=> v0.1.2](https://github.com/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan/compare/v0.1.1...v0.1.2)
 - 修复 `Optional` 参数检查错误
 - 修复合并转发中回复消息处理异常
 
 ## v0.1.1/2022-01-30
 
+- [v0.1.0 <=> v0.1.1](https://github.com/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan/compare/v0.1.0...v0.1.1)
 - 更新运行环境依赖 `httpx` 安装教程
 - 添加回复消息未查询到的处理方案
 - 将回复消息由块超链接更换为块引用
