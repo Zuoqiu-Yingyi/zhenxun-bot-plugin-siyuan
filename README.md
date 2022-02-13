@@ -268,7 +268,7 @@
              }
          }
      }
-     window.onload = setTimeout(jumpToID(), 0)
+     window.onload = setTimeout(jumpToID, 0)
      ```
 7. 上传 QQ 表情图片到思源笔记的 `<工作空间>/data/emojis/` 目录
    - 表情图片从 [coolq-http-api/docs/qq-face](https://github.com/kyubotics/coolq-http-api/tree/master/docs/qq-face) 目录打包下载, 可以使用项目 [DownGit](https://minhaskamal.github.io/DownGit/#/home) 打包该目录
