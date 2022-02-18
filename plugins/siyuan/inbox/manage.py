@@ -12,21 +12,27 @@ from utils.utils import (
 from ..data_source import siyuan_manager
 from ..utils import createDoc
 
+command = {
+    "append": "设置为收集箱",
+    "remove": "从收集箱移除",
+    "list": "列出收集箱",
+}
+
 __zx_plugin_name__ = "思源收集箱管理 [Superuser]"
-__plugin_usage__ = """
+__plugin_usage__ = f"""
 usage:
     思源笔记收集箱管理
     管理作为收集箱的群, 可以将该群所有的消息/内容发送到指定路径中
     指令:
-        设置为收集箱 [文档路径完整路径] [群号]
-        从收集箱移除 *[群号]
-        列出收集箱
+        ${command['append']} [文档路径完整路径] [群号]
+        ${command['remove']} *[群号]
+        ${command['list']}
 """.strip()
 __plugin_des__ = "管理作为思源收集箱的群"
 __plugin_cmd__ = [
-    "设置为收集箱 [doc_path] [group_id]",
-    "从收集箱移除 *[group_id]",
-    "列出收集箱",
+    f"${command['append']} [doc_path] [group_id]",
+    f"${command['remove']} *[group_id]",
+    f"${command['list']}",
 ]
 __plugin_version__ = 0.1
 __plugin_author__ = "Zuoqiu-Yingyi"
@@ -38,15 +44,15 @@ __plugin_type__ = ('思源笔记', 1)
 
 # REF [#](https://v2.nonebot.dev/docs/api/plugin#on_commandcmd-rulenone-aliasesnone-_depth0-kwargs)
 inbox_manage = on_command(
-    cmd="设置为收集箱",  # 命令名称
-    aliases={"从收集箱移除"},  # 命令别名
+    cmd=command['append'],  # 命令名称
+    aliases={command['remove']},  # 命令别名
     priority=1,  # 事件响应器优先级
     permission=SUPERUSER,  # 事件响应权限
     block=True,  # 是否阻止事件向更低优先级传递
 )
 
 inbox_list = on_command(
-    cmd="列出收集箱",  # 命令名称
+    cmd=command['list'],  # 命令名称
     priority=1,  # 事件响应器优先级
     permission=SUPERUSER,  # 事件响应权限
     block=True,  # 是否阻止事件向更低优先级传递
@@ -69,7 +75,7 @@ async def _(bot: Bot, event: MessageEvent, state: T_State):
     if group_list:
         success_list = []  # 成功处理的群
         for group_id in group_list:
-            if state['_prefix']['raw_command'] in ["设置为收集箱"]:
+            if state['_prefix']['raw_command'] in [command['append']]:
                 if await siyuan_manager.addInbox(
                     group_id=group_id,
                     doc_path=doc_path,
@@ -82,7 +88,7 @@ async def _(bot: Bot, event: MessageEvent, state: T_State):
                     await siyuan_manager.updateParentID(group_id=group_id, doc_id=doc_id)
                     success_list.append(group_id)
                     break
-            elif state['_prefix']['raw_command'] in ["从收集箱移除"]:
+            elif state['_prefix']['raw_command'] in {command['remove']}:
                 if await siyuan_manager.deleteInbox(group_id=group_id):
                     success_list.append(group_id)
         success_list = '\n'.join(map(str, success_list))
