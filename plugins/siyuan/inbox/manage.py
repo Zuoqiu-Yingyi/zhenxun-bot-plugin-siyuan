@@ -96,7 +96,7 @@ async def _(bot: Bot, event: MessageEvent, state: T_State):
 
 @inbox_list.handle()
 async def _(bot: Bot, event: MessageEvent, state: T_State):
-    groups = '\n'.join(await siyuan_manager.inbox_list.keys())  # 获取所有作为收集箱的群号
+    groups = '\n'.join(siyuan_manager.inbox_list.keys())  # 获取所有作为收集箱的群号
     if groups:
         reply = f"目前作为思源收集箱的群名单:\n{groups}"
     else:
