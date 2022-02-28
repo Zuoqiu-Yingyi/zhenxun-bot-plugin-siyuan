@@ -1,5 +1,8 @@
 # 更改日志 | CHANGE LOG
 
+## v0.1.3/2022-02-28
+
+- [v0.1.2 <=> v0.1.3](https://github.com/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan/compare/v0.1.2...v0.1.3)
 - 修复列出所有收集箱指令错误
 - 修正收集箱管理帮助文本
 - 统一设置收集箱管理指令
