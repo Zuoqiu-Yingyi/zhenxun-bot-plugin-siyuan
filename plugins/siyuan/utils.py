@@ -436,27 +436,41 @@ class Handle(object):
     async def forward(cls, data: Dict[str, Any], bot: Bot, *args, **kw):
         forward_msg = await bot.get_forward_msg(id=data.get('id'))
         messages = forward_msg.get('messages')
-
         l, r = '{', '}'
-        reply = []  # 各消息序列化后的字符串列表
+        replys = []
+
+        async def messagesParse(msgs):  # 解析消息
+            contents = msgs.get('content')
+            sender = msgs.get('sender')
+            if isinstance(contents, str):  # 是单条消息
+                # print(msgs)
+                msg = []  # 一条消息各组成元素序列化后的字符串列表
+                contents = cqparser.parseChain(contents)
+                for content in contents:  # 遍历一条消息的组成部分
+                    # print(content)
+                    content_dict = content.toDict()
+                    # print(content_dict)
+                    msg.append(await cls.run(
+                        t=content.type,
+                        data=content_dict.get('data'),
+                        *args,
+                        **kw,
+                    ))
+                msg = re.sub(r"[\r\n]+", r"\n", ''.join(msg)).removeprefix('\n').removesuffix('\n')
+            elif isinstance(contents, list):  # 是消息组
+                reply = []  # 各消息序列化后的字符串列表
+                for content in contents:  # 遍历转发的消息
+                    reply.append(await messagesParse(content))
+
+                msg = "{{{row\n%s\n}}}" % '\n\n'.join(reply)
+            else:
+                msg = contents
+
+            return f'{msg}\n{l}: custom-post-type="node" custom-sender-id="{sender.get("user_id")}" custom-sender-nickname="{sender.get("nickname")}" custom-time="{msgs.get("time")}{r}'
+
+        # print(messages)
         for message in messages:  # 遍历转发的消息
-            # print(message)
-            msg = []  # 一条消息各组成元素序列化后的字符串列表
-            contents = cqparser.parseChain(message.get('content'))
-            for content in contents:  # 遍历一条消息的组成部分
-                # print(content)
-                content_dict = content.toDict()
-                msg.append(await cls.run(
-                    t=content.type,
-                    data=content_dict.get('data'),
-                    *args,
-                    **kw,
-                ))
-            msg = re.sub(r"[\r\n]+", r"\n", ''.join(msg)).removeprefix('\n').removesuffix('\n')
-            sender = message.get('sender')
-            reply.append(f'{msg}\n{l}: custom-post-type="node" custom-sender-id="{sender.get("user_id")}" custom-sender-nickname="{sender.get("nickname")}" custom-time="{message.get("time")}{r}')
-
-        return "{{{row\n%s\n}}}" % '\n\n'.join(reply)
-
+            replys.append(await messagesParse(message))
+        return "{{{row\n%s\n}}}" % '\n\n'.join(replys)
 
 handle = Handle()
