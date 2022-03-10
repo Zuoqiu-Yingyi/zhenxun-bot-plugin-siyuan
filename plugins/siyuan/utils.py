@@ -15,7 +15,7 @@ from typing import (
     Optional,
 )
 
-from nonebot.adapters.cqhttp import (
+from nonebot.adapters.onebot.v11 import (
     Bot,
 )
 

@@ -1,9 +1,7 @@
-from pathlib import Path
-from typing import Optional
-
 import nonebot
 
-from configs.config import Config
+from pathlib import Path
+from typing import Optional
 from configs.path_config import DATA_PATH
 
 from .model import SiyuanManager
@@ -11,6 +9,8 @@ from .model import SiyuanManager
 siyuan_manager: Optional[SiyuanManager] = SiyuanManager(
     Path(DATA_PATH) / "siyuan.json",
 )
+
+from configs.config import Config
 
 Config.add_plugin_config(
     module="siyuan",
@@ -56,10 +56,11 @@ Config.add_plugin_config(
     module="siyuan",
     key="SIYUAN_URL",
     value=None,
-    name="Token",
+    name="URL",
     help_="思源笔记 URL",
     # default_value="http://localhost:6806",
     # _override=True,
 )
 
-nonebot.load_plugins("plugins/siyuan")
+# nonebot.load_plugins("plugins/siyuan")
+nonebot.load_plugins("plugins/siyuan/inbox")

@@ -5,7 +5,7 @@ from nonebot import (
     on_notice,
 )
 from nonebot.typing import T_State
-from nonebot.adapters.cqhttp import (
+from nonebot.adapters.onebot.v11 import (
     Bot,
     GroupMessageEvent,
     GroupUploadNoticeEvent,
@@ -15,7 +15,7 @@ from services.log import logger
 from configs.config import Config
 from utils.utils import scheduler, get_bot
 
-from .rule import (
+from ..rule import (
     checkInboxMessage,
     checkInboxNotice,
 )
@@ -40,7 +40,7 @@ __zx_plugin_name__ = "思源收集箱 [Hidden]"
 
 __plugin_des__ = "将群里所有消息都发送到指定"
 
-__plugin_version__ = 0.1
+__plugin_version__ = 0.2
 __plugin_author__ = "Zuoqiu-Yingyi"
 
 __plugin_type__ = ('思源笔记', 1)
@@ -120,7 +120,7 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent, state: T_State):
                 event=event_body,
                 is_message=False,
             )
-            # print(data)
+            print(data)
             r = await api.post(
                 url=api.url.appendBlock,
                 body={
@@ -179,7 +179,7 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State):
             event=event_body,
             have_text=have_text,
         )
-        # print(data)
+        print(data)
         r = await api.post(
             url=api.url.appendBlock,
             body={
@@ -195,5 +195,5 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State):
         logger.error(f"思源 API HTTP 响应错误 e:{e}")
     except SiyuanAPIException as e:
         logger.error(f"思源 API 内核错误 e:{e}")
-    except Exception as e:
-        logger.error(f"群消息处理错误 e:{e}")
+    # except Exception as e:
+    #     logger.error(f"群消息处理错误 e:{e}")

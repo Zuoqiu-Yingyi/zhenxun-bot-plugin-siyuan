@@ -1,12 +1,12 @@
 from nonebot.typing import T_State
-from nonebot.adapters.cqhttp import (
+from nonebot.adapters.onebot.v11 import (
     Bot,
     Event,
     GroupMessageEvent,
     GroupUploadNoticeEvent,
 )
 
-from ..data_source import siyuan_manager
+from .data_source import siyuan_manager
 
 
 async def checkInboxMessage(bot: Bot, event: Event, state: T_State) -> bool:

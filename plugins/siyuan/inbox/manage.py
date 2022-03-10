@@ -1,7 +1,7 @@
 from nonebot import on_command
 from nonebot.permission import SUPERUSER
 from nonebot.typing import T_State
-from nonebot.adapters.cqhttp import Bot, MessageEvent
+from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 
 from services.log import logger
 from utils.utils import (
@@ -28,13 +28,13 @@ usage:
         ${command['remove']} *[群号]
         ${command['list']}
 """.strip()
-__plugin_des__ = "管理作为思源收集箱的群"
+__plugin_des__ = "思源收集箱管理"
 __plugin_cmd__ = [
     f"${command['append']} [doc_path] [group_id]",
     f"${command['remove']} *[group_id]",
     f"${command['list']}",
 ]
-__plugin_version__ = 0.1
+__plugin_version__ = 0.2
 __plugin_author__ = "Zuoqiu-Yingyi"
 
 __plugin_type__ = ('思源笔记', 1)
@@ -75,7 +75,7 @@ async def _(bot: Bot, event: MessageEvent, state: T_State):
     if group_list:
         success_list = []  # 成功处理的群
         for group_id in group_list:
-            if state['_prefix']['raw_command'] in [command['append']]:
+            if state['_prefix']['raw_command'] in {command['append']}:
                 if await siyuan_manager.addInbox(
                     group_id=group_id,
                     doc_path=doc_path,
