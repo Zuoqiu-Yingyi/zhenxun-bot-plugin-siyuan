@@ -1,5 +1,8 @@
 # 更改日志 | CHANGE LOG
 
+## v0.2.0/2022-03-10
+
+- [v0.1.3 <=> v0.2.0](https://github.com/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan/compare/v0.1.3...v0.2.0)
 - 适配 [绪山真寻 Bot Release v0.1.4.3](https://github.com/HibiKier/zhenxun_bot/releases/tag/0.1.4.3)
 
 ## v0.1.3/2022-02-28
