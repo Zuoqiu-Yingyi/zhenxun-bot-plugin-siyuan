@@ -254,13 +254,25 @@
    - 表情 ID 与表情图片的映射关系可以从 [表情 CQ 码 ID 表](https://github.com/kyubotics/coolq-http-api/wiki/%E8%A1%A8%E6%83%85-CQ-%E7%A0%81-ID-%E8%A1%A8) 查看
    - 在思源笔记的工作空间中分别创建 `<工作空间>/data/emojis/qq-gif/` 与 `<工作空间>/data/emojis/qq-png/` 两个目录
    - 将打包下载的表情图片中所有 `*.gif` 动态表情图片与所有 `*.png` 静态表情图片分别上传到 `qq-gif` 与 `qq-png` 目录中
-8. 在 bot 访问的思源笔记本 Web 端中选择一个文档作为收集箱(选择笔记本内的一个文档而非笔记本), 并记录该文档的绝对路径
+8. 为主题添加渲染表示昵称的块自定义属性 `custom-sender-nickname` 功能
+   - 将如下 css 片段添加至文件 `<工作空间>/conf/appearance/themes/<主题名>/theme.css` 末尾
+     ```css
+     /* 显示昵称 */
+     .protyle-wysiwyg div[data-node-id][custom-sender-nickname]::before {
+         content: attr(custom-sender-nickname);
+         font-size: 0.75em;
+         color: var( --b3-theme-on-surface);
+         text-align: left;
+         outline: 1px solid var( --b3-theme-on-surface);
+     }
+     ```
+9.  在 bot 访问的思源笔记本 Web 端中选择一个文档作为收集箱(选择笔记本内的一个文档而非笔记本), 并记录该文档的绝对路径
    - 假设选择在 `收集箱` 笔记本内的 `Inbox` 文档作为收集箱, 该文档的 ID 为 `20220128203409-j5553g7` (可以从该文档的右键菜单中获取文档的 ID)
    - 从文件系统中搜索 `20220128203409-j5553g7.sy` 文件, 并获得该文件相对于 `<工作空间>/data/` 目录的路径, 例如 `20220128203353-2p55r7q/20220128203409-j5553g7.sy`
      - 其中 `20220128203353-2p55r7q/` 为 `收集箱` 笔记本的目录
      - 其中 `20220128203409-j5553g7.sy` 为 `Inbox` 文档的数据文件
-9.  依次启动 `go-cqhttp`, `Postgresql` 与 `绪山真寻 bot`
-10.  使用超级用户账户向机器人账户发送如下命令进行收集箱管理
+10. 依次启动 `go-cqhttp`, `Postgresql` 与 `绪山真寻 bot`
+11.  使用超级用户账户向机器人账户发送如下命令进行收集箱管理
    - `设置为收集箱 [文档完整路径] [群号]`
      - 示例: `设置为收集箱 20220128203353-2p55r7q/20220128203409-j5553g7.sy 123456789`
      - `[文档完整路径]` 需要填写第 8 步获得的文档完整路径, 由 `[笔记本ID/文档相对于笔记本的路径]` 组成, 这里是 `20220128203353-2p55r7q/20220128203409-j5553g7.sy`
