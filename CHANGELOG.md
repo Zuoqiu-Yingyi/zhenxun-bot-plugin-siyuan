@@ -1,5 +1,7 @@
 # 更改日志 | CHANGE LOG
 
+- 调整自叙文档缩进样式
+
 ## v0.2.1/2022-04-15
 
 - [v0.2.0 <=> v0.2.1](https://github.com/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan/compare/v0.2.0...v0.2.1)
