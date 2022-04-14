@@ -38,7 +38,7 @@ __plugin_cmd__ = [
     f"{command['remove']} *[group_id]",
     f"{command['list']}",
 ]
-__plugin_version__ = 0.2
+__plugin_version__ = 0.21
 __plugin_author__ = "Zuoqiu-Yingyi"
 
 __plugin_type__ = ('思源笔记', 1)
