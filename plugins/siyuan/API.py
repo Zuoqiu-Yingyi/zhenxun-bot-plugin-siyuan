@@ -16,8 +16,9 @@ class SiyuanAPIError(RuntimeError):
 
 
 class SiyuanAPIException(Exception):
-    def __init__(self, response):
+    def __init__(self, response, msg):
         self.response = response
+        self.msg = msg
 
 
 class ResponseBody(object):
@@ -100,7 +101,7 @@ def parse(request: Callable) -> Callable:
             body = ResponseBody(response.json())
             if body.code == 0:
                 return body
-            raise SiyuanAPIException(response)
+            raise SiyuanAPIException(response, body.msg)
         raise SiyuanAPIError(response)
     return wrapper
 

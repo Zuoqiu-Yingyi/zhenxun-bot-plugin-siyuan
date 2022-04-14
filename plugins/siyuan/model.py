@@ -25,27 +25,46 @@ class SiyuanManager(StaticData):
         self._data["inbox"]["inbox_list"] = self.inbox_list
         self.save()
 
-    async def addInbox(self, group_id: str, doc_path: str, doc_id: str = None) -> bool:
+    async def addInbox(self, group_id: str, box: str, path: str, assets: str, doc_id: str) -> bool:
         """
         :说明:
             将群聊加入收集箱名单
         :参数:
-            group_id: 群号
-            doc_path: 文档完整路径(含笔记本)
+            box: 笔记本 ID
+            path: 该收集箱文档路径
+            assets: 资源文件路径
             doc_id: 当天文档的 ID
         """
         if not self.isInInboxList(group_id):
-            # 移除前导的 '/' 并分割笔记本与文档路径
-            path = doc_path.lstrip('/').split('/', 1)
             self.inbox_list[group_id] = {
-                'box': path[0],  # 笔记本 ID
-                'path': f"/{path[-1]}",  # 该收集箱文档路径
-                'assets': f"/{path[0]}/{path[-1].removesuffix('.sy')}/assets/",  # 资源文件路径
+                'box': box,  # 笔记本 ID
+                'path': path,  # 该收集箱文档路径
+                'assets': assets,  # 资源文件路径
                 'parentID': doc_id,  # 当天文档的 ID
             }
             await self.updateData()
             return True
         return False
+
+    @staticmethod
+    def pathParser(doc_path: str) -> Tuple[str, str, str]:
+        """
+        :说明:
+            路径解析
+        :参数:
+            doc_path: 文档完整路径(含笔记本)
+        :返回:
+            box: 笔记本 ID
+            path: 该收集箱文档路径
+            assets: 资源文件路径
+        """
+        # 移除前导的 '/' 并分割笔记本与文档路径
+        path = doc_path.lstrip('/').split('/', 1)
+        return (
+            path[0],  # 笔记本 ID
+            f"/{path[-1]}",  # 该收集箱文档路径
+            f"/{path[0]}/{path[-1].removesuffix('.sy')}/assets/",  # 资源文件路径
+        )
 
     async def deleteInbox(self, group_id: str) -> bool:
         """
