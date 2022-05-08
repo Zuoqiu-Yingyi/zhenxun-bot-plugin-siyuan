@@ -149,6 +149,9 @@
 
 ## 开始 | START
 
+- 这里有个前三步的一键安装脚本, 不过我没测试过 [GitHub - AkashiCoin/zhenxun_bot-deploy: 真寻bot一键部署脚本](https://github.com/AkashiCoin/zhenxun_bot-deploy)
+- 这里还有个前三步的 Docker 镜像, 不过我也没用过 [hibikier/zhenxun_bot - Docker Image | Docker Hub](https://hub.docker.com/r/hibikier/zhenxun_bot)
+
 1. 安装 `go-cqhttp` 
    - 安装教程: [安装go-cqhttp | 绪山真寻Bot](https://hibikier.github.io/zhenxun_bot/docs/installation_doc/install_gocq.html)
    - 项目文档: [go-cqhttp 帮助中心](https://docs.go-cqhttp.org/)
