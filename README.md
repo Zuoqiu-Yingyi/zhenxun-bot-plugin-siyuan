@@ -176,7 +176,7 @@
        conda install httpx -c conda-forge
        ```
    - 安装本插件
-     - 将本插件项目中的 `/plugins/siyuan` 目录移动到  `<绪山真寻Bot程序根目录>/plugins/siyuan` 目录
+     - 将本插件项目中的 `/plugins/siyuan` 目录移动到  `<绪山真寻Bot程序根目录>/extensive_plugin/siyuan` 目录
 5. 安装本插件完成后运行一次 `绪山真寻 Bot`, 会生成插件配置选项, 进行插件配置
    - 打开文件 `data/configs/plugins2config.yaml`
    - 搜索并填写如下 5 个字段的 `value` 与 `default_value` 值
