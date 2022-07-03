@@ -4,6 +4,7 @@ from nonebot.typing import T_State
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 
 from services.log import logger
+from configs.config import Config
 from utils.utils import (
     get_message_text,
     is_number,
@@ -61,6 +62,8 @@ inbox_list = on_command(
     permission=SUPERUSER,  # 事件响应权限
     block=True,  # 是否阻止事件向更低优先级传递
 )
+
+SIYUAN_URL = Config.get_config("siyuan", "SIYUAN_URL")
 
 
 @inbox_manage.handle()
@@ -124,9 +127,13 @@ async def _(bot: Bot, event: MessageEvent, state: T_State):
 async def _(bot: Bot, event: MessageEvent, state: T_State):
     try:
         error_info = None
-        groups = '\n'.join(siyuan_manager.inbox_list.keys())  # 获取所有作为收集箱的群号
-        if groups:
-            reply = f"目前作为思源收集箱的群名单:\n{groups}"
+        inboxs = []
+        for group_id in siyuan_manager.inbox_list.keys():
+            doc_id = siyuan_manager.inbox_list[group_id]['path'][-25:-3]
+            inboxs.append(f"{group_id}: {SIYUAN_URL}/stage/build/desktop/?id={doc_id}")
+        inboxs = '\n'.join(inboxs)
+        if inboxs:
+            reply = f"目前作为思源收集箱的群名单:\n{inboxs}"
         else:
             reply = "目前没有任何群作为思源收集箱..."
     except SiyuanAPIException as e:
