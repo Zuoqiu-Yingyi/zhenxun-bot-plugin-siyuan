@@ -1,4 +1,5 @@
 from functools import partial
+from datetime import datetime
 
 from nonebot import (
     on_message,
@@ -32,6 +33,7 @@ from ..utils import (
     getFileInfo,
     transferFile,
     createDoc,
+    createTodayDoc,
     blockFormat,
     handle,
 )
@@ -103,14 +105,56 @@ async def _():
             logger.error(error_info)
 
 
+async def createDocOnTime(group_id: str):
+    """
+    :说明:
+        根据时间判断是否需要新建文档
+    :参数:
+        group_id: 群号
+    """
+    try:
+        error_info = None
+        bot = get_bot()
+
+        box, path, _, parentID = siyuan_manager.getInboxInfo(group_id=group_id)
+        # 获取思源系统时间 -> 获取配置文件中当前文档创建时间 -> 比较时间, 若不一致则新建文档并更新配置文件中的文档 ID
+        now = datetime.fromtimestamp(float((await api.post(url=api.url.currentTime)).data) / 1000)
+        current = datetime.strptime(parentID[:14], '%Y%m%d%H%M%S')
+        r = await createTodayDoc(notebook=box, path=path, now=now, current=current)
+        if r is not None:
+            doc_id, title = r
+            await siyuan_manager.updateParentID(group_id=group_id, doc_id=doc_id)
+            message = f"收集箱 {group_id} 新建文档 {title} 成功 {SIYUAN_URL}/stage/build/desktop/?id={doc_id}"
+            await bot.send_msg(
+                user_id=int(list(bot.config.superusers)[0]),
+                message=message,
+            )
+            logger.info(message)
+    except SiyuanAPIException as e:
+        error_info = f"思源 API 内核错误 e: {e.msg}"
+    except SiyuanAPIError as e:
+        error_info = f"思源 API HTTP 响应错误 e: {e}"
+    except Exception as e:
+        error_info = f"群消息处理错误 e: {e}"
+    finally:
+        if error_info is not None:
+            await bot.send_msg(
+                user_id=int(list(bot.config.superusers)[0]),
+                message=error_info,
+            )
+            logger.error(error_info)
+
+
 # 群文件
 @inbox_upload.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent, state: T_State):
     try:
         error_info = None
         event_body = await eventBodyParse(event.json())
-        group_id = event_body.get('group_id')  # 群号
-        _, _, uploadPath, parentID = siyuan_manager.getInboxInfo(group_id=str(group_id))
+        group_id = str(event_body.get('group_id'))  # 群号
+        await createDocOnTime(group_id)
+
+        _, _, uploadPath, parentID = siyuan_manager.getInboxInfo(group_id=group_id)
 
         _, id, name, _, url = await getFileInfo(event_body)
         file = await transferFile(
@@ -164,8 +208,10 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State):
     try:
         error_info = None
         event_body = await eventBodyParse(event.json())
-        group_id = event_body.get('group_id')  # 群号
-        _, _, uploadPath, parentID = siyuan_manager.getInboxInfo(group_id=str(group_id))
+        group_id = str(event_body.get('group_id'))  # 群号
+        await createDocOnTime(group_id)
+
+        _, _, uploadPath, parentID = siyuan_manager.getInboxInfo(group_id=group_id)
 
         have_text = False  # 是否有文本信息
         messages = []

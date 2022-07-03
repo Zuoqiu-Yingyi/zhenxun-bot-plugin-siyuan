@@ -179,6 +179,19 @@ async def transferFile(downloadFunc: partial, uploadPath: str) -> Dict[str, str]
             return response.data['succMap']
 
 
+def isSameDate(date1: datetime, date2: datetime) -> bool:
+    """
+    :说明:
+        判断两个日期是否是同一天
+    :参数:
+        date1: datetime 日期1
+        date2: datetime 日期2
+    :返回:
+        bool: 是否是同一天
+    """
+    return date1.year == date2.year and date1.month == date2.month and date1.day == date2.day
+
+
 async def createDoc(notebook: str, path: str, date: Optional[datetime] = None, title: str = None) -> str:
     """
     :说明:
@@ -212,6 +225,24 @@ async def createDoc(notebook: str, path: str, date: Optional[datetime] = None, t
         },
     )
     return r.data, title
+
+
+async def createTodayDoc(notebook: str, path: str, now: datetime, current: datetime) -> str:
+    """
+    :说明:
+        创建当天的文档
+    :参数:
+        notebook: 笔记本的 ID
+        path: 上级文档的路径
+        now: 当前时间
+        current: 当前文档时间
+    :返回:
+        新建文档 ID
+    """
+    if not isSameDate(now, current):
+        return await createDoc(notebook=notebook, path=path, date=now)
+    else:
+        return None
 
 
 async def blockFormat(
@@ -472,5 +503,6 @@ class Handle(object):
         for message in messages:  # 遍历转发的消息
             replys.append(await messagesParse(message))
         return "{{{row\n%s\n}}}" % '\n\n'.join(replys)
+
 
 handle = Handle()
