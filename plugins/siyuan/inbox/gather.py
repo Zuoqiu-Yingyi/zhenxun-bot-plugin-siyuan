@@ -42,7 +42,7 @@ __zx_plugin_name__ = "思源收集箱 [Hidden]"
 
 __plugin_des__ = "将群里所有消息都发送到指定"
 
-__plugin_version__ = 0.21
+__plugin_version__ = 0.22
 __plugin_author__ = "Zuoqiu-Yingyi"
 
 __plugin_type__ = ('思源笔记', 1)

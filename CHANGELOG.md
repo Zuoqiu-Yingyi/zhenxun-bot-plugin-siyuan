@@ -1,11 +1,14 @@
 # 更改日志 | CHANGE LOG
 
+## v0.2.2/2022-07-04
+
+- [v0.2.1 <=> v0.2.2](https://github.com/Zuoqiu-Yingyi/zhenxun-bot-plugin-siyuan/compare/v0.2.1...v0.2.2)
 - 调整自叙文档缩进样式
 - 添加机器人主体的一键安装脚本与 Docker 镜像
 - 将插件安装目录更改为 `extensive_plugin`
 - 添加环境依赖描述文件
 - 更新文档前校验当前日期对应文档是否存在
-- 为 `列出收集箱` 指令响应结果添加笔记 URL 信息
+- 为 `列出收集箱` 指令响应结果添加对应笔记 URL 信息
 
 ## v0.2.1/2022-04-15
 
