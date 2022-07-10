@@ -63,4 +63,4 @@ Config.add_plugin_config(
 )
 
 # nonebot.load_plugins("plugins/siyuan")
-nonebot.load_plugins("plugins/siyuan/inbox")
+nonebot.load_plugins("extensive_plugin/zhenxun_plugin_siyuan/inbox")
