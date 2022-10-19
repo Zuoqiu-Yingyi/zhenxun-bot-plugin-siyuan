@@ -20,6 +20,10 @@ from ..API import (
 command = {
     "append": "设置为收集箱",
     "remove": "从收集箱移除",
+    "open-inbox": "开启收集",
+    "close-inbox": "关闭收集",
+    "open-reply": "开启消息回复",
+    "close-reply": "关闭消息回复",
     "list": "列出收集箱",
 }
 
@@ -27,10 +31,16 @@ __zx_plugin_name__ = "思源收集箱管理 [Superuser]"
 __plugin_usage__ = f"""
 usage:
     思源笔记收集箱管理
-    管理作为收集箱的群, 可以将该群所有的消息/内容发送到指定路径中
+    管理作为收集箱的群, 可以将该群所有的消息/内容发送到指定路径下的文档中
+    可以开启或关闭指定收集箱的收集功能 (默认开启)
+    可以开启或关闭指定收集箱的回复 (默认开启回复)
     指令:
         {command['append']} [文档路径完整路径] [群号]
         {command['remove']} *[群号]
+        {command['open-inbox']} *[群号]
+        {command['close-inbox']} *[群号]
+        {command['open-reply']} *[群号]
+        {command['close-reply']} *[群号]
         {command['list']}
 """.strip()
 __plugin_des__ = "思源收集箱管理"
@@ -39,7 +49,7 @@ __plugin_cmd__ = [
     f"{command['remove']} *[group_id]",
     f"{command['list']}",
 ]
-__plugin_version__ = 0.22
+__plugin_version__ = 0.3
 __plugin_author__ = "Zuoqiu-Yingyi"
 
 __plugin_type__ = ('思源笔记', 1)
@@ -101,11 +111,33 @@ async def _(bot: Bot, event: MessageEvent, state: T_State):
                         ):
                             success_list.append(group_id)
                         break
+
                 elif state['_prefix']['raw_command'] in {command['remove']}:
                     if await siyuan_manager.deleteInbox(group_id=group_id):
                         success_list.append(group_id)
+
+                elif state['_prefix']['raw_command'] in {command['open-enable']}:
+                    if await siyuan_manager.isInInboxList(group_id=group_id):
+                        siyuan_manager.updateEnable(group_id=group_id, enable=True)
+                        success_list.append(group_id)
+
+                elif state['_prefix']['raw_command'] in {command['close-enable']}:
+                    if await siyuan_manager.isInInboxList(group_id=group_id):
+                        siyuan_manager.updateEnable(group_id=group_id, enable=False)
+                        success_list.append(group_id)
+
+                elif state['_prefix']['raw_command'] in {command['open-reply']}:
+                    if await siyuan_manager.isInInboxList(group_id=group_id):
+                        siyuan_manager.updateReply(group_id=group_id, reply=True)
+                        success_list.append(group_id)
+
+                elif state['_prefix']['raw_command'] in {command['close-reply']}:
+                    if await siyuan_manager.isInInboxList(group_id=group_id):
+                        siyuan_manager.updateReply(group_id=group_id, reply=False)
+                        success_list.append(group_id)
+
             success_list = '\n'.join(map(str, success_list))
-            reply = f"已成功将群 {success_list} {state['_prefix']['raw_command']}"
+            reply = f"群\n{success_list}\n已成功{state['_prefix']['raw_command']}"
         else:
             reply = f"{state['_prefix']['raw_command']}时没有发送有效的群号..."
     except SiyuanAPIException as e:

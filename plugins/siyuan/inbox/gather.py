@@ -42,7 +42,7 @@ __zx_plugin_name__ = "思源收集箱 [Hidden]"
 
 __plugin_des__ = "将群里所有消息都发送到指定"
 
-__plugin_version__ = 0.22
+__plugin_version__ = 0.3
 __plugin_author__ = "Zuoqiu-Yingyi"
 
 __plugin_type__ = ('思源笔记', 1)
@@ -116,7 +116,7 @@ async def createDocOnTime(group_id: str):
         error_info = None
         bot = get_bot()
 
-        box, path, _, parentID = siyuan_manager.getInboxInfo(group_id=group_id)
+        box, path, _, parentID, _, _ = siyuan_manager.getInboxInfo(group_id=group_id)
         # 获取思源系统时间 -> 获取配置文件中当前文档创建时间 -> 比较时间, 若不一致则新建文档并更新配置文件中的文档 ID
         now = datetime.fromtimestamp(float((await api.post(url=api.url.currentTime)).data) / 1000)
         current = datetime.strptime(parentID[:14], '%Y%m%d%H%M%S')
@@ -152,10 +152,13 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent, state: T_State):
         error_info = None
         event_body = await eventBodyParse(event.json())
         group_id = str(event_body.get('group_id'))  # 群号
+
+        _, _, uploadPath, parentID, enable, is_reply = siyuan_manager.getInboxInfo(group_id=group_id)
+
+        if not enable: # 收集功能已关闭
+            return
+
         await createDocOnTime(group_id)
-
-        _, _, uploadPath, parentID = siyuan_manager.getInboxInfo(group_id=group_id)
-
         _, id, name, _, url = await getFileInfo(event_body)
         file = await transferFile(
             downloadFunc=partial(
@@ -194,11 +197,18 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent, state: T_State):
     except Exception as e:
         error_info = f"群消息处理错误 e: {e}"
     else:
-        await inbox_upload.send(reply)
+        if is_reply: # 开启消息回复, 则直接在群中回复处理结果
+            await inbox_upload.send(reply)
         logger.info(reply)
     finally:
         if error_info is not None:
-            await inbox_upload.send(error_info)
+            if is_reply: # 开启消息回复, 则直接在群中回复错误信息
+                await inbox_upload.send(error_info)
+            else: # 否则在私聊中回复错误信息
+                await bot.send_msg(
+                    user_id=int(list(bot.config.superusers)[0]),
+                    message=error_info,
+                )
             logger.error(error_info)
 
 
@@ -209,10 +219,13 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State):
         error_info = None
         event_body = await eventBodyParse(event.json())
         group_id = str(event_body.get('group_id'))  # 群号
+
+        _, _, uploadPath, parentID, enable, is_reply = siyuan_manager.getInboxInfo(group_id=group_id)
+
+        if not enable: # 收集功能已关闭
+            return
+
         await createDocOnTime(group_id)
-
-        _, _, uploadPath, parentID = siyuan_manager.getInboxInfo(group_id=group_id)
-
         have_text = False  # 是否有文本信息
         messages = []
 
@@ -256,9 +269,16 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State):
     except Exception as e:
         error_info = f"群消息处理错误 e: {e}"
     else:
-        await inbox_message.send(reply)
+        if is_reply: # 开启消息回复, 则直接在群中回复处理结果
+            await inbox_message.send(reply)
         logger.info(reply)
     finally:
         if error_info is not None:
-            await inbox_message.send(error_info)
+            if is_reply: # 开启消息回复, 则直接在群中回复错误信息
+                await inbox_message.send(error_info)
+            else: # 否则在私聊中回复错误信息
+                await bot.send_msg(
+                    user_id=int(list(bot.config.superusers)[0]),
+                    message=error_info,
+                )
             logger.error(error_info)

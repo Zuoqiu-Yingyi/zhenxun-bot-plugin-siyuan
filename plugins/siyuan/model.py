@@ -25,7 +25,7 @@ class SiyuanManager(StaticData):
         self._data["inbox"]["inbox_list"] = self.inbox_list
         self.save()
 
-    async def addInbox(self, group_id: str, box: str, path: str, assets: str, doc_id: str) -> bool:
+    async def addInbox(self, group_id: str, box: str, path: str, assets: str, doc_id: str, enable: bool = True, reply: bool = True) -> bool:
         """
         :说明:
             将群聊加入收集箱名单
@@ -34,6 +34,8 @@ class SiyuanManager(StaticData):
             path: 该收集箱文档路径
             assets: 资源文件路径
             doc_id: 当天文档的 ID
+            enable: 是否启用收集功能
+            reply: 是否回复处理结果
         """
         if not self.isInInboxList(group_id):
             self.inbox_list[group_id] = {
@@ -41,6 +43,8 @@ class SiyuanManager(StaticData):
                 'path': path,  # 该收集箱文档路径
                 'assets': assets,  # 资源文件路径
                 'parentID': doc_id,  # 当天文档的 ID
+                'enable': enable, # 是否启用收集功能
+                'reply': reply, # 是否回复对发送到收集箱的消息的处理结果
             }
             await self.updateData()
             return True
@@ -93,6 +97,34 @@ class SiyuanManager(StaticData):
             return True
         return False
 
+    async def updateEnable(self, group_id: str, enable: bool = True) -> bool:
+        """
+        :说明:
+            更新是否开启回复功能
+        :参数:
+            group_id: 群号
+            enable: 是否开启某个收集箱的收集功能
+        """
+        if self.isInInboxList(group_id):
+            self.inbox_list[group_id]['enable'] = enable
+            await self.updateData()
+            return True
+        return False
+
+    async def updateReply(self, group_id: str, reply: bool = True) -> bool:
+        """
+        :说明:
+            更新是否开启回复功能
+        :参数:
+            group_id: 群号
+            reply: 某个收集箱接收消息并处理完成后是否回复消息处理结果
+        """
+        if self.isInInboxList(group_id):
+            self.inbox_list[group_id]['reply'] = reply
+            await self.updateData()
+            return True
+        return False
+
     def isInInboxList(self, group_id: str) -> bool:
         """
         :说明:
@@ -110,7 +142,7 @@ class SiyuanManager(StaticData):
         :参数:
             group_id: 群号
         :返回:
-            (box, path, assets, parentID)
+            (box, path, assets, parentID, enable, reply)
         """
         inbox = self.inbox_list[group_id]
         return (
@@ -118,4 +150,6 @@ class SiyuanManager(StaticData):
             inbox.get('path'),
             inbox.get('assets'),
             inbox.get('parentID'),
+            inbox.get('enable', True),
+            inbox.get('reply', True),
         )
