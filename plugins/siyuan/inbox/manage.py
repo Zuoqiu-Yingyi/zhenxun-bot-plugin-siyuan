@@ -47,6 +47,10 @@ __plugin_des__ = "思源收集箱管理"
 __plugin_cmd__ = [
     f"{command['append']} [doc_path] [group_id]",
     f"{command['remove']} *[group_id]",
+    f"{command['open-inbox']} *[group_id]",
+    f"{command['close-inbox']} *[group_id]",
+    f"{command['open-reply']} *[group_id]",
+    f"{command['close-reply']} *[group_id]",
     f"{command['list']}",
 ]
 __plugin_version__ = 0.3
@@ -60,7 +64,7 @@ __plugin_type__ = ('思源笔记', 1)
 # REF [#](https://v2.nonebot.dev/docs/api/plugin#on_commandcmd-rulenone-aliasesnone-_depth0-kwargs)
 inbox_manage = on_command(
     cmd=command['append'],  # 命令名称
-    aliases={command['remove']},  # 命令别名
+    aliases=set(map(lambda item: item[1], filter(lambda item: item[0] not in {'list'}, command.items()))),  # 命令别名
     priority=1,  # 事件响应器优先级
     permission=SUPERUSER,  # 事件响应权限
     block=True,  # 是否阻止事件向更低优先级传递
@@ -116,24 +120,24 @@ async def _(bot: Bot, event: MessageEvent, state: T_State):
                     if await siyuan_manager.deleteInbox(group_id=group_id):
                         success_list.append(group_id)
 
-                elif state['_prefix']['raw_command'] in {command['open-enable']}:
-                    if await siyuan_manager.isInInboxList(group_id=group_id):
-                        siyuan_manager.updateEnable(group_id=group_id, enable=True)
+                elif state['_prefix']['raw_command'] in {command['open-inbox']}:
+                    if siyuan_manager.isInInboxList(group_id=group_id):
+                        await siyuan_manager.updateEnable(group_id=group_id, enable=True)
                         success_list.append(group_id)
 
-                elif state['_prefix']['raw_command'] in {command['close-enable']}:
-                    if await siyuan_manager.isInInboxList(group_id=group_id):
-                        siyuan_manager.updateEnable(group_id=group_id, enable=False)
+                elif state['_prefix']['raw_command'] in {command['close-inbox']}:
+                    if siyuan_manager.isInInboxList(group_id=group_id):
+                        await siyuan_manager.updateEnable(group_id=group_id, enable=False)
                         success_list.append(group_id)
 
                 elif state['_prefix']['raw_command'] in {command['open-reply']}:
-                    if await siyuan_manager.isInInboxList(group_id=group_id):
-                        siyuan_manager.updateReply(group_id=group_id, reply=True)
+                    if siyuan_manager.isInInboxList(group_id=group_id):
+                        await siyuan_manager.updateReply(group_id=group_id, reply=True)
                         success_list.append(group_id)
 
                 elif state['_prefix']['raw_command'] in {command['close-reply']}:
-                    if await siyuan_manager.isInInboxList(group_id=group_id):
-                        siyuan_manager.updateReply(group_id=group_id, reply=False)
+                    if siyuan_manager.isInInboxList(group_id=group_id):
+                        await siyuan_manager.updateReply(group_id=group_id, reply=False)
                         success_list.append(group_id)
 
             success_list = '\n'.join(map(str, success_list))
@@ -162,7 +166,7 @@ async def _(bot: Bot, event: MessageEvent, state: T_State):
         inboxs = []
         for group_id in siyuan_manager.inbox_list.keys():
             doc_id = siyuan_manager.inbox_list[group_id]['path'][-25:-3]
-            inboxs.append(f"{group_id}: {SIYUAN_URL}/stage/build/desktop/?id={doc_id}")
+            inboxs.append(f"{group_id}:\n    收集功能: {'已开启' if siyuan_manager.inbox_list[group_id]['enable'] else '未开启'}\n    回复功能: {'已开启' if siyuan_manager.inbox_list[group_id]['reply'] else '未开启'}\n    {SIYUAN_URL}/stage/build/desktop/?id={doc_id}")
         inboxs = '\n'.join(inboxs)
         if inboxs:
             reply = f"目前作为思源收集箱的群名单:\n{inboxs}"
